@@ -10,69 +10,42 @@ window.addEventListener('load', function() {
                 this.ctx = ctx;
                 this.width = width;
                 this.height = height;
-                this.rotationAmount = 0;
+                this.sprites = [new Sprite(this)];
             }
 
             update(deltaTime) {
-                this.rotationAmount += (0.06 * deltaTime);
+                this.sprites.forEach(object => object.update(deltaTime));
             }
 
             draw() {
-                const width  = 200;
-                const height = 200
-                const x      = (canvas.width / 2) - (width / 2);
-                const y      = (canvas.height / 2) - (height / 2);
-                const cx     = x + (width / 2);   // x of shape center
-                const cy     = y + (height / 2);  // y of shape center
-
-                //ctx.save();
-                ctx.translate(cx, cy);              //translate to center of shape
-                ctx.rotate( (Math.PI / 180) * -this.rotationAmount);   //rotate 1 degrees.
-                ctx.translate(-cx, -cy);            //translate center back to 0,0
-                
-                ctx.globalAlpha = 0.5;
-                ctx.fillStyle = "#ff0000";
-                ctx.fillRect(x, y, width, height);  //draw normal shape
-                ctx.setTransform(1, 0, 0, 1, 0, 0); // return to identity matrix
-                //ctx.restore();
-              
-                //ctx.save();
-                ctx.translate(cx, cy);              //translate to center of shape
-                ctx.rotate( (Math.PI / 180) * this.rotationAmount);   //rotate 1 degrees.
-                ctx.translate(-cx, -cy);            //translate center back to 0,0
-                
-                ctx.globalAlpha = 0.5;
-                ctx.fillStyle = "#0000ff";
-                ctx.fillRect(x, y, width, height);
-                ctx.setTransform(1, 0, 0, 1, 0, 0);  // return to identity matrix
-                //ctx.restore();
-
+                this.sprites.forEach(object => object.draw(this.ctx));
             }
         }
 
         class Sprite {
-            constructor() {
+            constructor(game) {
+                this.game = game;
                 this.rotationAmount = 0;
                 this.width = 200;
                 this.height = 200
-                this.x = (canvas.width / 2) - (width / 2);
-                this.y = (canvas.height / 2) - (height / 2);
-                this.cx = x + (width / 2);   // x of sprite center
-                this.cy = y + (height / 2);  // y of sprite center
+                this.x = (game.width / 2) - (this.width / 2);
+                this.y = (game.height / 2) - (this.height / 2);
+                this.cx = this.x + (this.width / 2);   // x of sprite center
+                this.cy = this.y + (this.height / 2);  // y of sprite center
             }
 
             update(deltaTime) {
                 this.rotationAmount += (0.06 * deltaTime);
             }
 
-            draw() {
+            draw(ctx) {
 
                 // SHAPE A
 
                 // setup transform for rotation
                 ctx.translate(this.cx, this.cy);                       // translate origin to center of sprite
                 ctx.rotate( (Math.PI / 180) * -this.rotationAmount);   // rotate by rotationAmount degrees
-                ctx.translate(-cx, -cy);                               // translate origin back to top-left
+                ctx.translate(-this.cx, -this.cy);                     // translate origin back to top-left
                 
                 // draw shape
                 ctx.globalAlpha = 0.5;
@@ -83,14 +56,14 @@ window.addEventListener('load', function() {
                 // SHAPE B
               
                 // setup transform for rotation
-                ctx.translate(cx, cy);                                // translate origin to center of sprite
+                ctx.translate(this.cx, this.cy);                      // translate origin to center of sprite
                 ctx.rotate( (Math.PI / 180) * this.rotationAmount);   // rotate by rotationAmount degrees
-                ctx.translate(-cx, -cy);                              // translate origin back to top-left
+                ctx.translate(-this.cx, -this.cy);                    // translate origin back to top-left
                 
                 // draw shape
                 ctx.globalAlpha = 0.5;
                 ctx.fillStyle = "#0000ff";
-                ctx.fillRect(x, y, width, height);
+                ctx.fillRect(this.x, this.y, this.width, this.height);
                 ctx.setTransform(1, 0, 0, 1, 0, 0);                   // return to identity matrix
 
             }
