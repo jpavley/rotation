@@ -10,7 +10,13 @@ window.addEventListener('load', function() {
                 this.ctx = ctx;
                 this.width = width;
                 this.height = height;
-                this.sprites = [new Sprite(this)];
+                this.centerX = width / 2;
+                this.centerY = height / 2;
+                this.sprites = [
+                    new Sprite(this, this.centerX, this.centerY, 200, 200),
+                    new Sprite(this, this.centerX, this.centerY - 250, 100, 100),
+                    new Sprite(this, this.centerX, this.centerY + 250, 100, 100),
+                ];
             }
 
             update(deltaTime) {
@@ -23,51 +29,48 @@ window.addEventListener('load', function() {
         }
 
         class Sprite {
-            constructor(game) {
+            constructor(game, x, y, width, height) {
                 this.game = game;
                 this.rotationAmount = 0;
-                this.width = 200;
-                this.height = 200
-                this.x = (game.width / 2) - (this.width / 2);
-                this.y = (game.height / 2) - (this.height / 2);
+                this.width = width;
+                this.height = height;
+                this.alpha = 0.5;
+                this.x = x - (this.width / 2);
+                this.y = y - (this.height / 2);
                 this.cx = this.x + (this.width / 2);   // x of sprite center
                 this.cy = this.y + (this.height / 2);  // y of sprite center
             }
 
             update(deltaTime) {
-                this.rotationAmount += (0.06 * deltaTime);
+                this.rotationAmount += (0.05 * deltaTime);
             }
 
             draw(ctx) {
+                this.#drawShape("#ff0000", -this.rotationAmount);
+                this.#drawShape("#0000ff", this.rotationAmount);
+                this.#drawShape("#00ff00", this.rotationAmount/4);
+            }
 
-                // SHAPE A
+            #drawShape(fillStyle, rotationAmount) {
+                this.#transform(rotationAmount);
+                this.#render(fillStyle);
+            }
 
-                // setup transform for rotation
-                ctx.translate(this.cx, this.cy);                       // translate origin to center of sprite
-                ctx.rotate( (Math.PI / 180) * -this.rotationAmount);   // rotate by rotationAmount degrees
-                ctx.translate(-this.cx, -this.cy);                     // translate origin back to top-left
-                
-                // draw shape
-                ctx.globalAlpha = 0.5;
-                ctx.fillStyle = "#ff0000";
+            #transform(rotationAmount) {
+                ctx.translate(this.cx, this.cy);               // translate origin to center of sprite
+                ctx.rotate( (Math.PI / 180) * rotationAmount); // rotate by rotationAmount degrees
+                ctx.translate(-this.cx, -this.cy);             // translate origin back to top-left                
+            }
+
+            #render(fillStyle) {
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = fillStyle;
                 ctx.fillRect(this.x, this.y, this.width, this.height);
-                ctx.setTransform(1, 0, 0, 1, 0, 0);                   // reset transform to identity matrix
-
-                // SHAPE B
-              
-                // setup transform for rotation
-                ctx.translate(this.cx, this.cy);                      // translate origin to center of sprite
-                ctx.rotate( (Math.PI / 180) * this.rotationAmount);   // rotate by rotationAmount degrees
-                ctx.translate(-this.cx, -this.cy);                    // translate origin back to top-left
+                ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform to identity matrix                
                 
-                // draw shape
-                ctx.globalAlpha = 0.5;
-                ctx.fillStyle = "#0000ff";
-                ctx.fillRect(this.x, this.y, this.width, this.height);
-                ctx.setTransform(1, 0, 0, 1, 0, 0);                   // return to identity matrix
-
             }
         }
+
 
         const game = new Game(ctx, canvas.width, canvas.height);
         let lastTime = 1;
