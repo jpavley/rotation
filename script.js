@@ -16,6 +16,15 @@ window.addEventListener('load', function() {
         }
 
         update(deltaTime) {
+
+            this.sprites = this.sprites.filter(object => !object.deleteMe);
+
+            if (this.sprites.length == 0) {
+                this.sprites.push(
+                    new Sprite(this, this.centerX, this.centerY, this.staringSize, this.staringSize)
+                );
+            }
+
             this.sprites.forEach(object => object.update(deltaTime));
         }
 
@@ -40,11 +49,17 @@ window.addEventListener('load', function() {
 
             this.vx = Math.random() * 0.1 + 0.1;
             this.vy = Math.random() * 0.1 + 0.1;
+
+            this.deleteMe = false;
         }
 
         update(deltaTime) {
             this.#updatProperties(deltaTime);
             this.#hitTest();
+
+            if (this.vx > 3.0 || this.vy > 3.0) {
+                this.deleteMe = true;
+            }
         }
 
         #updatProperties(deltaTime) {
@@ -58,11 +73,12 @@ window.addEventListener('load', function() {
         #hitTest() {
             // reverse course if sprite hits a wall
             if (this.x < 0 || this.x > (game.width - this.width)) {
-                this.vx *= -1;
+                this.vx *= -1.05;
             }
             if (this.y < 0 || this.y > (game.height - this.height)) {
-                this.vy *= -1;
+                this.vy *= -1.05;
             }
+            // console.log(this.vx);
         }
 
         draw(ctx) {
