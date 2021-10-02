@@ -31,14 +31,23 @@ window.addEventListener('load', function() {
             this.width = width;
             this.height = height;
             this.alpha = 0.5;
+
             this.x = x - (this.width / 2);
             this.y = y - (this.height / 2);
+
             this.cx = this.x + (this.width / 2);   // x of sprite center
             this.cy = this.y + (this.height / 2);  // y of sprite center
+
+            this.vx = Math.random() * 0.1 + 0.1;
+            this.vy = Math.random() * 0.1 + 0.1;
         }
 
         update(deltaTime) {
             this.rotationAmount += (0.05 * deltaTime);
+            this.x += this.vx * deltaTime;
+            this.y += this.vy * deltaTime;
+            this.cx = this.x + (this.width / 2);   // x of sprite center
+            this.cy = this.y + (this.height / 2);  // y of sprite center
         }
 
         draw(ctx) {
