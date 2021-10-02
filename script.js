@@ -43,6 +43,11 @@ window.addEventListener('load', function() {
         }
 
         update(deltaTime) {
+            this.#updatProperties(deltaTime);
+            this.#hitTest();
+        }
+
+        #updatProperties(deltaTime) {
             this.rotationAmount += (0.05 * deltaTime);
             this.x += this.vx * deltaTime;
             this.y += this.vy * deltaTime;
@@ -50,7 +55,18 @@ window.addEventListener('load', function() {
             this.cy = this.y + (this.height / 2);  // y of sprite center
         }
 
+        #hitTest() {
+            // reverse course if sprite hits a wall
+            if (this.x < 0 || this.x > (game.width - this.width)) {
+                this.vx *= -1;
+            }
+            if (this.y < 0 || this.y > (game.height - this.height)) {
+                this.vy *= -1;
+            }
+        }
+
         draw(ctx) {
+            // each sprite is composed of three overlapping shapes rotating at different rates/directions
             this.#drawShape("#ff0000", -this.rotationAmount);
             this.#drawShape("#0000ff", this.rotationAmount);
             this.#drawShape("#00ff00", this.rotationAmount/4);
