@@ -1,10 +1,4 @@
 window.addEventListener('load', function() {
-        // get and configure the canvas
-        const canvas = document.getElementById('canvas1');
-        canvas.width = 500;
-        canvas.height = 800;
-        const ctx = canvas.getContext('2d');
-
         class Game {
             constructor(ctx, width, height) {
                 this.ctx = ctx;
@@ -12,10 +6,9 @@ window.addEventListener('load', function() {
                 this.height = height;
                 this.centerX = width / 2;
                 this.centerY = height / 2;
+                this.staringSize = Math.max(width, height) / 8;
                 this.sprites = [
-                    new Sprite(this, this.centerX, this.centerY, 200, 200),
-                    new Sprite(this, this.centerX, this.centerY - 250, 100, 100),
-                    new Sprite(this, this.centerX, this.centerY + 250, 100, 100),
+                    new Sprite(this, this.centerX, this.centerY, this.staringSize, this.staringSize),
                 ];
             }
 
@@ -70,10 +63,7 @@ window.addEventListener('load', function() {
                 
             }
         }
-
-
-        const game = new Game(ctx, canvas.width, canvas.height);
-        let lastTime = 1;
+        
         function animate(timeStamp) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -88,6 +78,16 @@ window.addEventListener('load', function() {
             //console.log(deltaTime);
             requestAnimationFrame(animate);
         }
-    
+
+        // Start up
+        //  - get and configure the canvas
+        const canvas = document.getElementById('canvas1');
+        canvas.width = 600;
+        canvas.height = 600;
+        const ctx = canvas.getContext('2d');
+        // - create game
+        const game = new Game(ctx, canvas.width, canvas.height);
+        let lastTime = 1;
+        // - start animation loop
         animate(0);
 });
