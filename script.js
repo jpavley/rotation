@@ -9,7 +9,7 @@ window.addEventListener('load', function() {
             this.height = height;
             this.centerX = width / 2;
             this.centerY = height / 2;
-            this.staringSize = Math.max(width, height) / 8;
+            this.staringSize = Math.max(width, height) / 10;
             this.sprites = [
                 new Sprite(this, this.centerX, this.centerY, this.staringSize, this.staringSize),
             ];
