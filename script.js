@@ -7,22 +7,62 @@ window.addEventListener('load', function() {
             this.ctx = ctx;
             this.width = width;
             this.height = height;
+
             this.centerX = width / 2;
             this.centerY = height / 2;
-            this.staringSize = Math.max(width, height) / 10;
-            this.sprites = [
-                new Sprite(this, this.centerX, this.centerY, this.staringSize, this.staringSize),
-            ];
+            this.staringSize = Math.max(width, height) / 5;
+
+            this.sprites = [];
+            this.spriteInterval = 500;
+            this.spriteTimer = 0;
+
+            this.compassPoints = ["n", "e", "s", "w"];
+            this.currentCompassPoint = -1;
+            this.maxCompassPoints = this.compassPoints.length;
+
+            this.#addSprite();
+        }
+
+
+        #addSprite() {
+
+            const newSprite = new Sprite(this, this.centerX, this.centerY, this.staringSize, this.staringSize)
+
+            switch (this.compassPoints[this.currentCompassPoint]) {
+                case 'n':
+                    newSprite.vx *= -1;
+                    newSprite.vy *= -1;
+                    break;
+                case 'e':
+                    newSprite.vx *= 1;
+                    newSprite.vy *= 1;
+                    break;
+                case 's':
+                    newSprite.vx *= 1;
+                    newSprite.vy *= -1;
+                    break;
+                case 'w':
+                    newSprite.vx *= -1;
+                    newSprite.vy *= 1;
+                    break;
+            }
+
+            this.currentCompassPoint += 1;
+            if (this.currentCompassPoint >= this.maxCompassPoints) {
+                this.currentCompassPoint = 0;
+            }
+
+            this.sprites.push(newSprite);
         }
 
         update(deltaTime) {
-
             this.sprites = this.sprites.filter(object => !object.deleteMe);
 
-            if (this.sprites.length == 0) {
-                this.sprites.push(
-                    new Sprite(this, this.centerX, this.centerY, this.staringSize, this.staringSize)
-                );
+            if (this.spriteTimer > this.spriteInterval) {
+                this.#addSprite();
+                this.spriteTimer = 0;
+            } else {
+                this.spriteTimer += deltaTime;
             }
 
             this.sprites.forEach(object => object.update(deltaTime));
@@ -37,33 +77,40 @@ window.addEventListener('load', function() {
         constructor(game, x, y, width, height) {
             this.game = game;
             this.rotationAmount = 0;
+            this.rotationIncrement = Math.random() * 0.1 + 0.05;
             this.width = width;
             this.height = height;
             this.alpha = 0.5;
 
             this.x = x - (this.width / 2);
             this.y = y - (this.height / 2);
+            this.vx = Math.random() * 0.3 + 0.05;
+            this.vy = Math.random() * 0.3 + 0.05;
 
             this.cx = this.x + (this.width / 2);   // x of sprite center
             this.cy = this.y + (this.height / 2);  // y of sprite center
 
-            this.vx = Math.random() * 0.1 + 0.1;
-            this.vy = Math.random() * 0.1 + 0.1;
-
             this.deleteMe = false;
+            this.hitCount = 0;
+            this.maxHits = 10;
+
+            this.colorA = "#" + Math.floor(Math.random()*16777215).toString(16);
+            this.colorB = "#" + Math.floor(Math.random()*16777215).toString(16);;
+            this.colorC = "#" + Math.floor(Math.random()*16777215).toString(16);;
         }
 
         update(deltaTime) {
-            this.#updatProperties(deltaTime);
-            this.#hitTest();
 
-            if (this.vx > 3.0 || this.vy > 3.0) {
+            if(this.hitCount >= this.maxHits) {
                 this.deleteMe = true;
             }
+
+            this.#updatProperties(deltaTime);
+            this.#hitTest();
         }
 
         #updatProperties(deltaTime) {
-            this.rotationAmount += (0.05 * deltaTime);
+            this.rotationAmount += (this.rotationIncrement * deltaTime);
             this.x += this.vx * deltaTime;
             this.y += this.vy * deltaTime;
             this.cx = this.x + (this.width / 2);   // x of sprite center
@@ -71,21 +118,30 @@ window.addEventListener('load', function() {
         }
 
         #hitTest() {
+            let hit = false;
+
             // reverse course if sprite hits a wall
             if (this.x < 0 || this.x > (game.width - this.width)) {
-                this.vx *= -1.05;
+                this.vx *= -1.0;
+                hit = true;
             }
             if (this.y < 0 || this.y > (game.height - this.height)) {
-                this.vy *= -1.05;
+                this.vy *= -1.0;
+                hit = true;
             }
-            // console.log(this.vx);
+
+            if (hit) {
+                this.hitCount += 1;
+                this.width *= 0.8;
+                this.height *= 0.8;
+            }
         }
 
         draw(ctx) {
             // each sprite is composed of three overlapping shapes rotating at different rates/directions
-            this.#drawShape("#ff0000", -this.rotationAmount);
-            this.#drawShape("#0000ff", this.rotationAmount);
-            this.#drawShape("#00ff00", this.rotationAmount/4);
+            this.#drawShape(this.colorA, -this.rotationAmount);
+            this.#drawShape(this.colorB, this.rotationAmount);
+            this.#drawShape(this.colorC, this.rotationAmount/4);
         }
 
         #drawShape(fillStyle, rotationAmount) {
