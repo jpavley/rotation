@@ -20,11 +20,11 @@ window.addEventListener('load', function() {
             this.currentCompassPoint = -1;
             this.maxCompassPoints = this.compassPoints.length;
 
-            this.#addSprite();
+            this.addSprite();
         }
 
 
-        #addSprite() {
+        addSprite() {
 
             const newSprite = new Sprite(this, this.centerX, this.centerY, this.staringSize, this.staringSize)
 
@@ -59,7 +59,7 @@ window.addEventListener('load', function() {
             this.sprites = this.sprites.filter(object => !object.deleteMe);
 
             if (this.spriteTimer > this.spriteInterval) {
-                this.#addSprite();
+                this.addSprite();
                 this.spriteTimer = 0;
             } else {
                 this.spriteTimer += deltaTime;
@@ -105,11 +105,11 @@ window.addEventListener('load', function() {
                 this.deleteMe = true;
             }
 
-            this.#updatProperties(deltaTime);
-            this.#hitTest();
+            this.updatProperties(deltaTime);
+            this.hitTest();
         }
 
-        #updatProperties(deltaTime) {
+        updatProperties(deltaTime) {
             this.rotationAmount += (this.rotationIncrement * deltaTime);
             this.x += this.vx * deltaTime;
             this.y += this.vy * deltaTime;
@@ -117,7 +117,7 @@ window.addEventListener('load', function() {
             this.cy = this.y + (this.height / 2);  // y of sprite center
         }
 
-        #hitTest() {
+        hitTest() {
             let hit = false;
 
             // reverse course if sprite hits a wall
@@ -139,23 +139,23 @@ window.addEventListener('load', function() {
 
         draw(ctx) {
             // each sprite is composed of three overlapping shapes rotating at different rates/directions
-            this.#drawShape(this.colorA, -this.rotationAmount);
-            this.#drawShape(this.colorB, this.rotationAmount);
-            this.#drawShape(this.colorC, this.rotationAmount/4);
+            this.drawShape(this.colorA, -this.rotationAmount);
+            this.drawShape(this.colorB, this.rotationAmount);
+            this.drawShape(this.colorC, this.rotationAmount/4);
         }
 
-        #drawShape(fillStyle, rotationAmount) {
-            this.#transform(rotationAmount);
-            this.#render(fillStyle);
+        drawShape(fillStyle, rotationAmount) {
+            this.transform(rotationAmount);
+            this.render(fillStyle);
         }
 
-        #transform(rotationAmount) {
+        transform(rotationAmount) {
             ctx.translate(this.cx, this.cy);               // translate origin to center of sprite
             ctx.rotate( (Math.PI / 180) * rotationAmount); // rotate by rotationAmount degrees
             ctx.translate(-this.cx, -this.cy);             // translate origin back to top-left                
         }
 
-        #render(fillStyle) {
+        render(fillStyle) {
             ctx.globalAlpha = this.alpha;
             ctx.fillStyle = fillStyle;
             ctx.fillRect(this.x, this.y, this.width, this.height);
