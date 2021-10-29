@@ -20,6 +20,8 @@ window.addEventListener('load', function() {
             this.currentCompassPoint = -1;
             this.maxCompassPoints = this.compassPoints.length;
 
+            this.radius = 300;
+
             this.addSprite();
         }
 
@@ -69,6 +71,11 @@ window.addEventListener('load', function() {
         }
 
         draw() {
+            // this.ctx.beginPath();
+            // this.ctx.arc(this.centerX, this.centerY, this.radius, 0, Math.PI * 2);
+            // this.ctx.clip();
+            // this.ctx.fillStyle = '#f4f0ec';
+            // this.ctx.fillRect(0, 0, this.width, this.height);
             this.sprites.forEach(object => object.draw(this.ctx));
         }
     }
@@ -132,7 +139,7 @@ window.addEventListener('load', function() {
             const hypotenuse = this.calcHypotenuse(game.centerX, game.centerY,
               this.x, this.y);
               
-            if (hypotenuse > 300) {
+            if (hypotenuse > this.game.radius) {
               this.vx *= -1.0;
               this.vy *= -1.0;
               hit = true;
@@ -166,8 +173,7 @@ window.addEventListener('load', function() {
             ctx.globalAlpha = this.alpha;
             ctx.fillStyle = fillStyle;
             ctx.fillRect(this.x, this.y, this.width, this.height);
-            ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform to identity matrix                
-            
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform to identity matrix
         }
     }
     
