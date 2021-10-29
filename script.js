@@ -117,26 +117,33 @@ window.addEventListener('load', function() {
             this.cy = this.y + (this.height / 2);  // y of sprite center
         }
 
-        hitTest() {
+        calcHypotenuse(aX, aY, bX, bY) {
+            // use the pythagorean theorem to calc distance between two particles
+            // a^2 + b^2 = c^2 (width squared + height squared = hypotenuse squared)
+            const dx = aX - bX;
+            const dy = aY - bY;
+            const hypotenuse = Math.sqrt((dx ** 2) + (dy ** 2));
+            return hypotenuse;
+          }
+      
+          hitTest() {
             let hit = false;
-
-            // reverse course if sprite hits a wall
-            if (this.x < 0 || this.x > (game.width - this.width)) {
-                this.vx *= -1.0;
-                hit = true;
+            
+            const hypotenuse = this.calcHypotenuse(game.centerX, game.centerY,
+              this.x, this.y);
+              
+            if (hypotenuse > 300) {
+              this.vx *= -1.0;
+              this.vy *= -1.0;
+              hit = true;
             }
-            if (this.y < 0 || this.y > (game.height - this.height)) {
-                this.vy *= -1.0;
-                hit = true;
-            }
-
+      
             if (hit) {
-                this.hitCount += 1;
-                this.width *= 0.8;
-                this.height *= 0.8;
+              this.hitCount += 1;
+              this.width *= 0.8;
+              this.height *= 0.8;
             }
-        }
-
+          }
         draw(ctx) {
             // each sprite is composed of three overlapping shapes rotating at different rates/directions
             this.drawShape(this.colorA, -this.rotationAmount);
